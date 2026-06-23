@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    const res = await api.post<ApiResponse<User[]>>('/login', { email, password });
+    const res = await api.post<ApiResponse<User[]>>('/login', { username: email, password });
     if (res.data.error !== 'False') throw new Error(res.data.message);
     const user = res.data.data![0];
     const token = 'session-token';
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (data: { first_name: string; mobile: string; email: string; password: string }) => {
-    const res = await api.post<ApiResponse>('/registration', data);
+    const res = await api.post<ApiResponse>('/register', data);
     if (res.data.error !== 'False') throw new Error(res.data.message);
   };
 

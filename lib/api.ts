@@ -6,12 +6,8 @@ const api = axios.create({
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
+    'X-API-KEY': API_KEY,
   },
-});
-
-api.interceptors.request.use((config) => {
-  config.params = { ...config.params, api_key: API_KEY };
-  return config;
 });
 
 export default api;
