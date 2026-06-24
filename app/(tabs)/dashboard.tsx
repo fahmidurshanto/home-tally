@@ -1,25 +1,29 @@
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
-import { useCategories, useExpenses } from '../../lib/queries';
+import { useCategories, useExpenses, useCreateExpense } from '../../lib/queries';
 import { LanguageToggle } from '../../components/LanguageToggle';
 import { SummaryCard } from '../../components/SummaryCard';
 import { AnimatedFAB } from '../../components/AnimatedFAB';
 import { TransactionItem } from '../../components/TransactionItem';
 import { EmptyState } from '../../components/EmptyState';
+import { EntryForm } from '../../components/EntryForm';
 import { formatBDT, formatDate } from '../../lib/utils';
 
 export default function DashboardScreen() {
   const t = useT();
   const { state: { user }, logout } = useAuth();
   const { state: { expenses, categories }, dispatch } = useAppData();
+  const [formVisible, setFormVisible] = useState(false);
 
   const company = user?.company ?? '';
+  const userId = user?.id ?? '';
   const { data: catData } = useCategories(company);
   const { data: expData } = useExpenses(company);
+  const createMutation = useCreateExpense();
 
   useEffect(() => {
     if (catData) dispatch({ type: 'SET_CATEGORIES', payload: catData });
@@ -41,6 +45,18 @@ export default function DashboardScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace('/');
+  };
+
+  const handleSave = async (data: { particular: string; amount: string; date: string; category_id: string }) => {
+    // Income vs expense is determined by the selected category's `types` (1 = expense, 2 = income).
+    const types = categories.find(c => c.id === data.category_id)?.types ?? '1';
+    try {
+      await createMutation.mutateAsync({ ...data, company, user_id: userId, types });
+      Alert.alert(t('entrySaved'));
+    } catch (e: any) {
+      Alert.alert(e?.message || t('networkError'));
+      throw e; // let EntryForm keep the modal open for retry
+    }
   };
 
   return (
@@ -70,7 +86,7 @@ export default function DashboardScreen() {
           <EmptyState
             message={t('noTransactions')}
             ctaLabel={t('addFirst')}
-            onCta={() => {}}
+            onCta={() => setFormVisible(true)}
           />
         ) : (
           recent.map((item) => (
@@ -84,7 +100,14 @@ export default function DashboardScreen() {
         )}
       </ScrollView>
 
-      <AnimatedFAB onPress={() => {}} />
+      <AnimatedFAB onPress={() => setFormVisible(true)} />
+
+      <EntryForm
+        visible={formVisible}
+        onClose={() => setFormVisible(false)}
+        onSave={handleSave}
+        categories={categories}
+      />
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
@@ -36,13 +36,20 @@ export default function TransactionsScreen() {
     return true;
   });
 
-  const handleSave = (data: { particular: string; amount: string; date: string; category_id: string }) => {
-    if (editingItem) {
-      updateMutation.mutate({ ...data, row_id: editingItem.id, company_id: company, user_id: userId });
-    } else {
-      createMutation.mutate({ ...data, company_id: company, user_id: userId });
+  const handleSave = async (data: { particular: string; amount: string; date: string; category_id: string }) => {
+    // Income vs expense is determined by the selected category's `types` (1 = expense, 2 = income).
+    const types = categories.find(c => c.id === data.category_id)?.types ?? '1';
+    try {
+      if (editingItem) {
+        await updateMutation.mutateAsync({ ...data, row_id: editingItem.id, company, user_id: userId, types });
+      } else {
+        await createMutation.mutateAsync({ ...data, company, user_id: userId, types });
+      }
+      Alert.alert(t('entrySaved'));
+    } catch (e: any) {
+      Alert.alert(e?.message || t('networkError'));
+      throw e; // let EntryForm keep the modal open for retry
     }
-    setEditingItem(null);
   };
 
   const handleEdit = (item: any) => {
@@ -66,6 +73,7 @@ export default function TransactionsScreen() {
           value={search}
           onChangeText={setSearch}
           placeholder={t('searchPlaceholder')}
+          placeholderTextColor="#666666"
         />
 
         <View className="flex-row gap-2 my-3">

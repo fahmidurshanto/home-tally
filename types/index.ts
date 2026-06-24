@@ -37,4 +37,13 @@ export interface ApiResponse<T = any> {
   code: string;
   message: string;
   data?: T;
+  // Mutation responses return one of these ID fields instead of `data`.
+  NewID?: number | string;
+  UpdateID?: number | string;
+  RowID?: number | string;
+  new_id?: number | string;
+}
+
+export interface Tools {
+  category: Category[];
 }

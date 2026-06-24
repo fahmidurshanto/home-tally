@@ -1,3 +1,34 @@
+import * as Location from 'expo-location';
+
+// Best-effort device metadata for the Register API (lat, lng, ip_addr).
+// Any step that fails falls back to an empty string so registration still proceeds.
+export async function getDeviceMeta(): Promise<{ lat: string; lng: string; ip_addr: string }> {
+  let lat = '';
+  let lng = '';
+  let ip_addr = '';
+
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status === 'granted') {
+      const pos = await Location.getCurrentPositionAsync({});
+      lat = String(pos.coords.latitude);
+      lng = String(pos.coords.longitude);
+    }
+  } catch {
+    // ignore — keep defaults
+  }
+
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const json = await res.json();
+    ip_addr = json.ip ?? '';
+  } catch {
+    // ignore — keep defaults
+  }
+
+  return { lat, lng, ip_addr };
+}
+
 export function formatBDT(amount: string | number): string {
   const num = typeof amount === 'string' ? parseFloat(amount) : amount;
   return '৳' + num.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import Animated, {
   useSharedValue, useAnimatedStyle,
   withSpring, withTiming
@@ -10,7 +10,7 @@ import { Category } from '../types';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: { particular: string; amount: string; date: string; category_id: string }) => void;
+  onSave: (data: { particular: string; amount: string; date: string; category_id: string }) => void | Promise<void>;
   categories: Category[];
   initial?: { particular: string; amount: string; date: string; category_id: string };
 }
@@ -24,6 +24,7 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
   const [amount, setAmount] = React.useState(initial?.amount ?? '');
   const [date, setDate] = React.useState(initial?.date ?? new Date().toISOString().split('T')[0]);
   const [categoryId, setCategoryId] = React.useState(initial?.category_id ?? '');
+  const [saving, setSaving] = React.useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -54,9 +55,21 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
     transform: [{ translateY: translateY.value }],
   }));
 
-  const handleSave = () => {
-    onSave({ particular, amount, date, category_id: categoryId });
-    onClose();
+  const handleSave = async () => {
+    if (!particular.trim()) { Alert.alert(t('particular'), t('required')); return; }
+    if (!(parseFloat(amount) > 0)) { Alert.alert(t('amount'), t('amountInvalid')); return; }
+    if (!categoryId) { Alert.alert(t('selectCategory')); return; }
+
+    setSaving(true);
+    try {
+      // Parent surfaces the network error; we only close on success.
+      await onSave({ particular: particular.trim(), amount, date, category_id: categoryId });
+      onClose();
+    } catch {
+      // keep the modal open so the user can retry
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!visible) return null;
@@ -75,6 +88,7 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
           value={particular}
           onChangeText={setParticular}
           placeholder={t('particular')}
+          placeholderTextColor="#666666"
         />
 
         <Text className="text-textSub text-sm mb-1">{t('amount')}</Text>
@@ -84,6 +98,7 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
           onChangeText={setAmount}
           keyboardType="numeric"
           placeholder="0"
+          placeholderTextColor="#666666"
         />
 
         <Text className="text-textSub text-sm mb-1">{t('date')}</Text>
@@ -92,6 +107,7 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
           value={date}
           onChangeText={setDate}
           placeholder="YYYY-MM-DD"
+          placeholderTextColor="#666666"
         />
 
         <Text className="text-textSub text-sm mb-1">{t('category')}</Text>
@@ -108,11 +124,15 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
         </View>
 
         <View className="flex-row gap-3">
-          <TouchableOpacity onPress={onClose} className="flex-1 border border-border rounded-xl py-3 items-center">
+          <TouchableOpacity onPress={onClose} disabled={saving} className="flex-1 border border-border rounded-xl py-3 items-center">
             <Text className="text-textSub">{t('cancel')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSave} className="flex-1 bg-primary rounded-xl py-3 items-center">
-            <Text className="text-white font-semibold">{t('save')}</Text>
+          <TouchableOpacity onPress={handleSave} disabled={saving} className={`flex-1 rounded-xl py-3 items-center ${saving ? 'bg-primary/60' : 'bg-primary'}`}>
+            {saving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white font-semibold">{t('save')}</Text>
+            )}
           </TouchableOpacity>
         </View>
       </Animated.View>

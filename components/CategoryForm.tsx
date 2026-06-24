@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import Animated, {
   useSharedValue, useAnimatedStyle,
   withSpring, withTiming
@@ -9,16 +9,18 @@ import { useT } from '../hooks/useLang';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: { name: string; types: string }) => void;
+  onSave: (data: { name: string; types: string }) => void | Promise<void>;
+  initial?: { name: string; types: string };
 }
 
-export function CategoryForm({ visible, onClose, onSave }: Props) {
+export function CategoryForm({ visible, onClose, onSave, initial }: Props) {
   const t = useT();
   const translateY = useSharedValue(600);
   const opacity = useSharedValue(0);
 
   const [name, setName] = React.useState('');
   const [types, setTypes] = React.useState('1');
+  const [saving, setSaving] = React.useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -32,19 +34,29 @@ export function CategoryForm({ visible, onClose, onSave }: Props) {
 
   useEffect(() => {
     if (visible) {
-      setName('');
-      setTypes('1');
+      setName(initial?.name ?? '');
+      setTypes(initial?.types ?? '1');
     }
-  }, [visible]);
+  }, [visible, initial]);
 
   const overlayStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
 
-  const handleSave = () => {
-    onSave({ name, types });
-    onClose();
+  const handleSave = async () => {
+    if (!name.trim()) { Alert.alert(t('categoryName'), t('required')); return; }
+
+    setSaving(true);
+    try {
+      // Parent surfaces the network error; we only close on success.
+      await onSave({ name: name.trim(), types });
+      onClose();
+    } catch {
+      // keep the modal open so the user can retry
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!visible) return null;
@@ -55,7 +67,7 @@ export function CategoryForm({ visible, onClose, onSave }: Props) {
         <Animated.View style={overlayStyle} className="flex-1 bg-black/40" />
       </TouchableOpacity>
       <Animated.View style={sheetStyle} className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6">
-        <Text className="text-textMain text-lg font-bold mb-4">{t('addCategory')}</Text>
+        <Text className="text-textMain text-lg font-bold mb-4">{initial ? t('editCategory') : t('addCategory')}</Text>
 
         <Text className="text-textSub text-sm mb-1">{t('categoryName')}</Text>
         <TextInput
@@ -63,6 +75,7 @@ export function CategoryForm({ visible, onClose, onSave }: Props) {
           value={name}
           onChangeText={setName}
           placeholder={t('categoryName')}
+          placeholderTextColor="#666666"
         />
 
         <Text className="text-textSub text-sm mb-1">{t('type')}</Text>
@@ -82,11 +95,15 @@ export function CategoryForm({ visible, onClose, onSave }: Props) {
         </View>
 
         <View className="flex-row gap-3">
-          <TouchableOpacity onPress={onClose} className="flex-1 border border-border rounded-xl py-3 items-center">
+          <TouchableOpacity onPress={onClose} disabled={saving} className="flex-1 border border-border rounded-xl py-3 items-center">
             <Text className="text-textSub">{t('cancel')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSave} className="flex-1 bg-primary rounded-xl py-3 items-center">
-            <Text className="text-white font-semibold">{t('save')}</Text>
+          <TouchableOpacity onPress={handleSave} disabled={saving} className={`flex-1 rounded-xl py-3 items-center ${saving ? 'bg-primary/60' : 'bg-primary'}`}>
+            {saving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white font-semibold">{t('save')}</Text>
+            )}
           </TouchableOpacity>
         </View>
       </Animated.View>

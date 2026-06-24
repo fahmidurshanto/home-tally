@@ -1,6 +1,7 @@
 import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../lib/api';
+import { getDeviceMeta } from '../lib/utils';
 import { User, ApiResponse } from '../types';
 
 interface AuthState {
@@ -74,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (data: { first_name: string; mobile: string; email: string; password: string }) => {
-    const res = await api.post<ApiResponse>('/register', data);
+    const meta = await getDeviceMeta();
+    const res = await api.post<ApiResponse>('/register', { ...data, ...meta });
     if (res.data.error !== 'False') throw new Error(res.data.message);
   };
 

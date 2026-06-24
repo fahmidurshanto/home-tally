@@ -37,6 +37,7 @@ export const strings = {
   addFirst:           { en: 'Add your first entry', bn: 'প্রথম এন্ট্রি যোগ করুন' },
   categories:         { en: 'Categories',          bn: 'বিভাগসমূহ' },
   addCategory:        { en: 'Add Category',        bn: 'বিভাগ যোগ করুন' },
+  editCategory:       { en: 'Edit Category',       bn: 'বিভাগ সম্পাদনা করুন' },
   noCategories:       { en: 'No categories yet',   bn: 'এখনও কোনো বিভাগ নেই' },
   categoryName:       { en: 'Category Name',       bn: 'বিভাগের নাম' },
   type:               { en: 'Type',                bn: 'ধরন' },
@@ -56,6 +57,10 @@ export const strings = {
   amountInvalid:      { en: 'Amount must be > 0',  bn: 'পরিমাণ ০ এর বেশি হতে হবে' },
   logout:             { en: 'Logout',              bn: 'লগআউট' },
   loading:            { en: 'Loading…',            bn: 'লোড হচ্ছে…' },
+  saving:             { en: 'Saving…',             bn: 'সংরক্ষণ হচ্ছে…' },
+  entrySaved:         { en: 'Entry saved',         bn: 'এন্ট্রি সংরক্ষিত হয়েছে' },
+  categorySaved:      { en: 'Category saved',      bn: 'বিভাগ সংরক্ষিত হয়েছে' },
+  selectCategory:     { en: 'Please select a category', bn: 'একটি বিভাগ নির্বাচন করুন' },
   yes:                { en: 'Yes',                 bn: 'হ্যাঁ' },
   no:                 { en: 'No',                  bn: 'না' },
 };
