@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
@@ -77,7 +77,7 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-bg">
+    <KeyboardAvoidingView className="flex-1 bg-bg" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View className="bg-primary px-4 pt-14 pb-4">
         <Text className="text-white text-xl font-semibold">{t('transactions')}</Text>
       </View>
@@ -135,6 +135,6 @@ export default function TransactionsScreen() {
         categories={categories}
         initial={editingItem ? { particular: editingItem.particular, amount: editingItem.amount, date: editingItem.date, category_id: editingItem.category_id } : undefined}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }

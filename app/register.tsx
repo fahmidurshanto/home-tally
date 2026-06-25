@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useT } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
@@ -31,7 +31,10 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className="flex-1 bg-bg px-6 pt-20">
+    <KeyboardAvoidingView
+      className="flex-1 bg-bg px-6 pt-20"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <Text className="text-2xl font-bold text-textMain mb-8">{t('register')}</Text>
 
       <Text className="text-textSub text-sm mb-1">{t('firstName')}</Text>
@@ -87,6 +90,6 @@ export default function RegisterScreen() {
       <TouchableOpacity onPress={() => router.push('/login')}>
         <Text className="text-primary text-center">{t('haveAccount')}</Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

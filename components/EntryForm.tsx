@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, {
   useSharedValue, useAnimatedStyle,
   withSpring, withTiming
@@ -65,7 +65,10 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
       // Parent surfaces the network error; we only close on success.
       await onSave({ particular: particular.trim(), amount, date, category_id: categoryId });
       onClose();
-    } catch {
+    } catch (error: any) {
+      console.log('Add Entry Error:', error);
+      console.log('Response Data:', error.response?.data);
+      console.log('Add Entry State:', { particular, amount, date, categoryId });
       // keep the modal open so the user can retry
     } finally {
       setSaving(false);
@@ -79,7 +82,11 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
       <TouchableOpacity activeOpacity={1} onPress={onClose} style={StyleSheet.absoluteFill}>
         <Animated.View style={overlayStyle} className="flex-1 bg-black/40" />
       </TouchableOpacity>
-      <Animated.View style={sheetStyle} className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6">
+      <KeyboardAvoidingView
+        className="absolute bottom-0 left-0 right-0"
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+      <Animated.View style={sheetStyle} className="bg-white rounded-t-3xl p-6">
         <Text className="text-textMain text-lg font-bold mb-4">{initial ? t('editEntry') : t('addEntry')}</Text>
 
         <Text className="text-textSub text-sm mb-1">{t('particular')}</Text>
@@ -133,9 +140,10 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
             ) : (
               <Text className="text-white font-semibold">{t('save')}</Text>
             )}
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+        </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
