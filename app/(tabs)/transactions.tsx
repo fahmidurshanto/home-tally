@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { EntryForm } from '../../components/EntryForm';
 import { AnimatedFAB } from '../../components/AnimatedFAB';
 import { useCreateExpense, useUpdateExpense } from '../../lib/queries';
+import { isExpenseIncome } from '../../lib/utils';
 
 export default function TransactionsScreen() {
   const t = useT();
@@ -20,6 +21,8 @@ export default function TransactionsScreen() {
   const [editingItem, setEditingItem] = useState<any>(null);
 
   const company = user?.company ?? '';
+  // IMPORTANT: user_id MUST be user.id, NOT user.company. They happen to be
+  // equal in the sample account (both "54") but are distinct fields.
   const userId = user?.id ?? '';
   const { data: expData } = useExpenses(company);
   const createMutation = useCreateExpense();
@@ -30,8 +33,13 @@ export default function TransactionsScreen() {
     if (expData) dispatch({ type: 'SET_EXPENSES', payload: expData });
   }, [expData]);
 
+  // API 8 omits `types` on rows — resolve income vs expense via the category.
   const filtered = expenses.filter(e => {
-    if (filter !== 'all' && e.types !== filter) return false;
+    if (filter !== 'all') {
+      const income = isExpenseIncome(e, categories);
+      if (filter === '2' && !income) return false;
+      if (filter === '1' && income) return false;
+    }
     if (search && !e.particular.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
@@ -58,7 +66,14 @@ export default function TransactionsScreen() {
   };
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
+    Alert.alert(
+      t('deleteConfirm'),
+      '',
+      [
+        { text: t('no'), style: 'cancel' },
+        { text: t('yes'), style: 'destructive', onPress: () => deleteMutation.mutate(id) },
+      ],
+    );
   };
 
   return (
@@ -103,6 +118,7 @@ export default function TransactionsScreen() {
             <TransactionItem
               key={item.id}
               item={item}
+              isIncome={isExpenseIncome(item, categories)}
               onDelete={() => handleDelete(item.id)}
               onPress={() => handleEdit(item)}
             />

@@ -26,6 +26,9 @@ export interface Expense {
   particular: string;
   date: string;
   amount: string;
+  // NOTE: `types` is NOT returned by GET /expenses (API 8). It is only SENT on
+  // create/update (APIs 9/10). For display, resolve the type via the category:
+  // `lib/utils.ts` -> resolveExpenseType(expense, categories).
   types?: string;
   created_on: string;
   updated_on: string;
@@ -42,8 +45,4 @@ export interface ApiResponse<T = any> {
   UpdateID?: number | string;
   RowID?: number | string;
   new_id?: number | string;
-}
-
-export interface Tools {
-  category: Category[];
 }

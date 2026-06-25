@@ -9,11 +9,14 @@ import { Expense } from '../types';
 
 interface Props {
   item: Expense;
+  // API 8 returns no `types` on rows, so income vs expense is resolved by the
+  // caller (via the category) and passed in explicitly.
+  isIncome: boolean;
   onDelete: () => void;
   onPress: () => void;
 }
 
-export function TransactionItem({ item, onDelete, onPress }: Props) {
+export function TransactionItem({ item, isIncome, onDelete, onPress }: Props) {
   const translateX = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
@@ -32,8 +35,6 @@ export function TransactionItem({ item, onDelete, onPress }: Props) {
   const rowStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
-
-  const isIncome = item.types === '2';
 
   return (
     <GestureDetector gesture={panGesture}>

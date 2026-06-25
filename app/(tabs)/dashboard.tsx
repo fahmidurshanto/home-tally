@@ -11,7 +11,7 @@ import { AnimatedFAB } from '../../components/AnimatedFAB';
 import { TransactionItem } from '../../components/TransactionItem';
 import { EmptyState } from '../../components/EmptyState';
 import { EntryForm } from '../../components/EntryForm';
-import { formatBDT, formatDate } from '../../lib/utils';
+import { formatBDT, formatDate, isExpenseIncome } from '../../lib/utils';
 
 export default function DashboardScreen() {
   const t = useT();
@@ -20,6 +20,8 @@ export default function DashboardScreen() {
   const [formVisible, setFormVisible] = useState(false);
 
   const company = user?.company ?? '';
+  // IMPORTANT: user_id MUST be user.id, NOT user.company. They happen to be
+  // equal in the sample account (both "54") but are distinct fields.
   const userId = user?.id ?? '';
   const { data: catData } = useCategories(company);
   const { data: expData } = useExpenses(company);
@@ -33,11 +35,12 @@ export default function DashboardScreen() {
     if (expData) dispatch({ type: 'SET_EXPENSES', payload: expData });
   }, [expData]);
 
+  // API 8 omits `types` on rows — resolve via the entry's category instead.
   const totalIncome = expenses
-    .filter(e => e.types === '2')
+    .filter(e => isExpenseIncome(e, categories))
     .reduce((sum, e) => sum + parseFloat(e.amount || '0'), 0);
   const totalExpense = expenses
-    .filter(e => e.types === '1' || !e.types)
+    .filter(e => !isExpenseIncome(e, categories))
     .reduce((sum, e) => sum + parseFloat(e.amount || '0'), 0);
   const balance = totalIncome - totalExpense;
   const recent = expenses.slice(0, 5);
@@ -93,6 +96,7 @@ export default function DashboardScreen() {
             <TransactionItem
               key={item.id}
               item={item}
+              isIncome={isExpenseIncome(item, categories)}
               onDelete={() => {}}
               onPress={() => {}}
             />

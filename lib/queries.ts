@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from './api';
-import { Category, Expense, Tools, ApiResponse } from '../types';
+import { Category, Expense, ApiResponse } from '../types';
 
 // API 3 — All Category: GET /category?company=&row_id(optional)
 export function useCategories(company: string) {
@@ -10,19 +10,6 @@ export function useCategories(company: string) {
       const res = await api.get<ApiResponse<Category[]>>('/category', { params: { company } });
       if (res.data.error !== 'False') throw new Error(res.data.message);
       return res.data.data ?? [];
-    },
-    enabled: !!company,
-  });
-}
-
-// API 7 — Get Category and others: GET /tools?company=
-export function useTools(company: string) {
-  return useQuery({
-    queryKey: ['tools', company],
-    queryFn: async () => {
-      const res = await api.get<ApiResponse<Tools>>('/tools', { params: { company } });
-      if (res.data.error !== 'False') throw new Error(res.data.message);
-      return res.data.data;
     },
     enabled: !!company,
   });

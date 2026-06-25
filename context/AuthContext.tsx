@@ -6,14 +6,13 @@ import { User, ApiResponse } from '../types';
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
 type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'LOGIN'; payload: { user: User; token: string } }
+  | { type: 'LOGIN'; payload: { user: User } }
   | { type: 'LOGOUT' };
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
@@ -21,9 +20,9 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'LOGIN':
-      return { user: action.payload.user, token: action.payload.token, isLoading: false, isAuthenticated: true };
+      return { user: action.payload.user, isLoading: false, isAuthenticated: true };
     case 'LOGOUT':
-      return { user: null, token: null, isLoading: false, isAuthenticated: false };
+      return { user: null, isLoading: false, isAuthenticated: false };
     default:
       return state;
   }
@@ -41,7 +40,6 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
-    token: null,
     isLoading: true,
     isAuthenticated: false,
   });
@@ -50,12 +48,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     restoreSession();
   }, []);
 
+  // This backend issues no auth token — every request relies on the global
+  // X-API-KEY. The session is therefore persisted as just the user object; its
+  // presence is the sole signal for "logged in".
   async function restoreSession() {
     try {
-      const token = await AsyncStorage.getItem('token');
       const userJson = await AsyncStorage.getItem('user');
-      if (token && userJson) {
-        dispatch({ type: 'LOGIN', payload: { user: JSON.parse(userJson), token } });
+      if (userJson) {
+        dispatch({ type: 'LOGIN', payload: { user: JSON.parse(userJson) } });
       } else {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
@@ -68,10 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.post<ApiResponse<User[]>>('/login', { username: email, password });
     if (res.data.error !== 'False') throw new Error(res.data.message);
     const user = res.data.data![0];
-    const token = 'session-token';
-    await AsyncStorage.setItem('token', token);
     await AsyncStorage.setItem('user', JSON.stringify(user));
-    dispatch({ type: 'LOGIN', payload: { user, token } });
+    dispatch({ type: 'LOGIN', payload: { user } });
   };
 
   const register = async (data: { first_name: string; mobile: string; email: string; password: string }) => {
@@ -81,7 +79,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('user');
     dispatch({ type: 'LOGOUT' });
   };

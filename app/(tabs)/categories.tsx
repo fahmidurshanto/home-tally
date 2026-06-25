@@ -47,7 +47,14 @@ export default function CategoriesScreen() {
   };
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
+    Alert.alert(
+      t('deleteCategory'),
+      '',
+      [
+        { text: t('no'), style: 'cancel' },
+        { text: t('yes'), style: 'destructive', onPress: () => deleteMutation.mutate(id) },
+      ],
+    );
   };
 
   return (

@@ -1,4 +1,16 @@
 import * as Location from 'expo-location';
+import { Category, Expense } from '../types';
+
+// API 8 (GET /expenses) does NOT return `types` on each row — only the
+// `category_id`. Income vs expense is therefore derived from the category the
+// entry belongs to: category.types === '2' → income, '1' (or missing) → expense.
+export function resolveExpenseType(expense: Expense, categories: Category[]): '1' | '2' {
+  return (categories.find(c => c.id === expense.category_id)?.types ?? '1') as '1' | '2';
+}
+
+export function isExpenseIncome(expense: Expense, categories: Category[]): boolean {
+  return resolveExpenseType(expense, categories) === '2';
+}
 
 // Best-effort device metadata for the Register API (lat, lng, ip_addr).
 // Any step that fails falls back to an empty string so registration still proceeds.
