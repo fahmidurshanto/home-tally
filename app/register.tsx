@@ -24,6 +24,14 @@ export default function RegisterScreen() {
       Alert.alert(t('registerSuccess'));
       router.push('/login');
     } catch (e: any) {
+      console.log('--- REGISTRATION ERROR DETAILS START ---');
+      console.log('Error object:', e);
+      if (e.response) {
+        console.log('Response Status:', e.response.status);
+        console.log('Response Headers:', e.response.headers);
+        console.log('Response Data:', e.response.data);
+      }
+      console.log('--- REGISTRATION ERROR DETAILS END ---');
       Alert.alert(e.message || t('networkError'));
     } finally {
       setLoading(false);

@@ -65,7 +65,7 @@ export default function DashboardScreen() {
   return (
     <View className="flex-1 bg-bg">
       <View className="flex-row items-center justify-between px-4 pt-14 pb-4 bg-primary">
-        <Text className="text-white text-xl font-semibold">
+        <Text className="text-white text-xl font-semibold flex-1 mr-4" numberOfLines={1} ellipsizeMode="tail">
           {t('hello')}, {user?.first_name}!
         </Text>
         <View className="flex-row items-center gap-3">
