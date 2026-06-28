@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue, useAnimatedStyle,
@@ -38,13 +38,77 @@ export function CategoryItem({ item, onDelete, onPress }: Props) {
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={rowStyle}>
-        <View className="bg-card rounded-xl px-4 py-3 mb-2 flex-row items-center justify-between shadow-sm">
-          <Text className="text-textMain font-semibold">{item.name}</Text>
-          <Text className={`text-xs font-semibold ${isIncome ? 'text-income' : 'text-expense'}`}>
-            {isIncome ? 'Income' : 'Expense'}
-          </Text>
-        </View>
+        <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
+          {/* Left card-like logo container */}
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoText}>🏷️</Text>
+          </View>
+
+          {/* Middle Details */}
+          <View style={styles.detailsContainer}>
+            <Text style={styles.nameText} numberOfLines={1}>
+              {item.name}
+            </Text>
+          </View>
+
+          {/* Right styled type button */}
+          <View style={[styles.typeButton, { backgroundColor: isIncome ? '#1A7A4A' : '#8B1A1A' }]}>
+            <Text style={styles.typeButtonText}>
+              {isIncome ? 'Income' : 'Expense'}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </Animated.View>
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  logoContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: '#F4F6F8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  logoText: {
+    fontSize: 24,
+  },
+  detailsContainer: {
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1A1A1A',
+  },
+  typeButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 9999,
+    minWidth: 90,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  typeButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 14,
+  },
+});
+

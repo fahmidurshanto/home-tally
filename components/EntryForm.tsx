@@ -1,8 +1,20 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle,
-  withSpring, withTiming
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { useT } from '../hooks/useLang';
 import { Category } from '../types';
@@ -10,9 +22,19 @@ import { Category } from '../types';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: { particular: string; amount: string; date: string; category_id: string }) => void | Promise<void>;
+  onSave: (data: {
+    particular: string;
+    amount: string;
+    date: string;
+    category_id: string;
+  }) => void | Promise<void>;
   categories: Category[];
-  initial?: { particular: string; amount: string; date: string; category_id: string };
+  initial?: {
+    particular: string;
+    amount: string;
+    date: string;
+    category_id: string;
+  };
 }
 
 export function EntryForm({ visible, onClose, onSave, categories, initial }: Props) {
@@ -22,7 +44,9 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
 
   const [particular, setParticular] = React.useState(initial?.particular ?? '');
   const [amount, setAmount] = React.useState(initial?.amount ?? '');
-  const [date, setDate] = React.useState(initial?.date ?? new Date().toISOString().split('T')[0]);
+  const [date, setDate] = React.useState(
+    initial?.date ?? new Date().toISOString().split('T')[0]
+  );
   const [categoryId, setCategoryId] = React.useState(initial?.category_id ?? '');
   const [saving, setSaving] = React.useState(false);
 
@@ -62,14 +86,13 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
 
     setSaving(true);
     try {
-      // Parent surfaces the network error; we only close on success.
       await onSave({ particular: particular.trim(), amount, date, category_id: categoryId });
       onClose();
     } catch (error: any) {
       console.log('Add Entry Error:', error);
       console.log('Response Data:', error.response?.data);
       console.log('Add Entry State:', { particular, amount, date, categoryId });
-      // keep the modal open so the user can retry
+      // keep modal open so user can retry
     } finally {
       setSaving(false);
     }
@@ -79,71 +102,221 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      {/* Semi-transparent overlay */}
       <TouchableOpacity activeOpacity={1} onPress={onClose} style={StyleSheet.absoluteFill}>
-        <Animated.View style={overlayStyle} className="flex-1 bg-black/40" />
+        <Animated.View style={[overlayStyle, styles.overlay]} />
       </TouchableOpacity>
+
+      {/* Bottom sheet with keyboard avoidance */}
       <KeyboardAvoidingView
-        className="absolute bottom-0 left-0 right-0"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboardView}
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
       >
-      <Animated.View style={sheetStyle} className="bg-white rounded-t-3xl p-6">
-        <Text className="text-textMain text-lg font-bold mb-4">{initial ? t('editEntry') : t('addEntry')}</Text>
+        <Animated.View style={[sheetStyle, styles.sheet]}>
+          {/* Sheet Title */}
+          <Text style={styles.sheetTitle}>
+            {initial ? t('editEntry') : t('addEntry')}
+          </Text>
 
-        <Text className="text-textSub text-sm mb-1">{t('particular')}</Text>
-        <TextInput
-          className="bg-bg rounded-xl px-4 py-3 mb-3 text-textMain"
-          value={particular}
-          onChangeText={setParticular}
-          placeholder={t('particular')}
-          placeholderTextColor="#666666"
-        />
+          {/* Form fields — flex:1 so buttons always stay in view */}
+          <View style={styles.formContent}>
+            {/* Particular */}
+            <Text style={styles.label}>{t('particular')}</Text>
+            <TextInput
+              style={styles.input}
+              value={particular}
+              onChangeText={setParticular}
+              placeholder={t('particular')}
+              placeholderTextColor="#999999"
+            />
 
-        <Text className="text-textSub text-sm mb-1">{t('amount')}</Text>
-        <TextInput
-          className="bg-bg rounded-xl px-4 py-3 mb-3 text-textMain"
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-          placeholder="0"
-          placeholderTextColor="#666666"
-        />
+            {/* Amount */}
+            <Text style={styles.label}>{t('amount')}</Text>
+            <TextInput
+              style={styles.input}
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="numeric"
+              placeholder="0"
+              placeholderTextColor="#999999"
+            />
 
-        <Text className="text-textSub text-sm mb-1">{t('date')}</Text>
-        <TextInput
-          className="bg-bg rounded-xl px-4 py-3 mb-3 text-textMain"
-          value={date}
-          onChangeText={setDate}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#666666"
-        />
+            {/* Date */}
+            <Text style={styles.label}>{t('date')}</Text>
+            <TextInput
+              style={styles.input}
+              value={date}
+              onChangeText={setDate}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor="#999999"
+            />
 
-        <Text className="text-textSub text-sm mb-1">{t('category')}</Text>
-        <View className="flex-row flex-wrap gap-2 mb-4">
-          {categories.map((cat) => (
+            {/* Category selector */}
+            <Text style={styles.label}>{t('category')}</Text>
+            <View style={styles.categoryRow}>
+              {categories.map((cat) => (
+                <TouchableOpacity
+                  key={cat.id}
+                  onPress={() => setCategoryId(cat.id)}
+                  style={[
+                    styles.categoryChip,
+                    categoryId === cat.id
+                      ? styles.categoryChipActive
+                      : styles.categoryChipInactive,
+                  ]}
+                  activeOpacity={0.8}
+                >
+                  <Text
+                    style={
+                      categoryId === cat.id
+                        ? styles.categoryChipTextActive
+                        : styles.categoryChipTextInactive
+                    }
+                  >
+                    {cat.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Buttons always pinned at the bottom of the sheet */}
+          <View style={styles.buttonRow}>
             <TouchableOpacity
-              key={cat.id}
-              onPress={() => setCategoryId(cat.id)}
-              className={`px-3 py-2 rounded-xl border ${categoryId === cat.id ? 'bg-primary border-primary' : 'bg-white border-border'}`}
+              onPress={onClose}
+              disabled={saving}
+              style={styles.cancelButton}
+              activeOpacity={0.8}
             >
-              <Text className={categoryId === cat.id ? 'text-white' : 'text-textMain'}>{cat.name}</Text>
+              <Text style={styles.cancelButtonText}>{t('cancel')}</Text>
             </TouchableOpacity>
-          ))}
-        </View>
-
-        <View className="flex-row gap-3">
-          <TouchableOpacity onPress={onClose} disabled={saving} className="flex-1 border border-border rounded-xl py-3 items-center">
-            <Text className="text-textSub">{t('cancel')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSave} disabled={saving} className={`flex-1 rounded-xl py-3 items-center ${saving ? 'bg-primary/60' : 'bg-primary'}`}>
-            {saving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white font-semibold">{t('save')}</Text>
-            )}
-        </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSave}
+              disabled={saving}
+              style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+              activeOpacity={0.8}
+            >
+              {saving ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.saveButtonText}>{t('save')}</Text>
+              )}
+            </TouchableOpacity>
           </View>
         </Animated.View>
       </KeyboardAvoidingView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  keyboardView: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  sheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 24,
+    paddingBottom: 16,
+  },
+  formContent: {
+    // grows to fill space, buttons sit below
+  },
+  sheetTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#555555',
+    marginBottom: 6,
+    marginLeft: 8,
+  },
+  input: {
+    backgroundColor: '#F4F6F8',
+    borderRadius: 9999,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    marginBottom: 16,
+  },
+  categoryRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 24,
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    borderWidth: 1,
+  },
+  categoryChipActive: {
+    backgroundColor: '#64bd71',
+    borderColor: '#64bd71',
+  },
+  categoryChipInactive: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E0E0E0',
+  },
+  categoryChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  categoryChipTextInactive: {
+    color: '#1A1A1A',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 8,
+  },
+  cancelButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 9999,
+    paddingVertical: 16,
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  cancelButtonText: {
+    color: '#666666',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: '#64bd71',
+    borderRadius: 9999,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+});

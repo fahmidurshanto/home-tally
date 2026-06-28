@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue, useAnimatedStyle,
   withTiming, withDelay
@@ -27,9 +27,32 @@ export function SummaryCard({ title, amount, color, delay = 0 }: Props) {
   }));
 
   return (
-    <Animated.View style={style} className="flex-1 bg-card rounded-xl p-4 shadow-sm">
-      <Text className="text-textSub text-sm">{title}</Text>
-      <Text className="text-2xl font-bold mt-1" style={{ color }}>{amount}</Text>
+    <Animated.View style={[style, styles.card]}>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.amount, { color }]}>{amount}</Text>
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  title: {
+    color: '#666666',
+    fontSize: 14,
+  },
+  amount: {
+    fontSize: 22,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+});

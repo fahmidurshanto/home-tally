@@ -16,10 +16,10 @@ export function EmptyState({ message, ctaLabel, onCta }: Props) {
       </View>
       <Text className="text-textSub text-base text-center mb-4">{message}</Text>
       <TouchableOpacity
-        className="bg-primary px-6 py-3 rounded-xl"
+        className="bg-primary px-6 py-3 rounded-full"
         onPress={onCta}
       >
-        <Text className="text-white font-semibold">{ctaLabel}</Text>
+        <Text className="text-white font-bold">{ctaLabel}</Text>
       </TouchableOpacity>
     </Animated.View>
   );

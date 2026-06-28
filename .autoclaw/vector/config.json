@@ -1,0 +1,21 @@
+{
+  "sources": {
+    "claude-code": {
+      "enabled": true
+    },
+    "claude-desktop": {
+      "enabled": true
+    },
+    "gemini": {
+      "enabled": true
+    },
+    "continue": {
+      "enabled": true
+    }
+  },
+  "embedding": {
+    "provider": "ollama",
+    "model": "nomic-embed-text",
+    "dimension": 768
+  }
+}

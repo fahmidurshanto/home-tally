@@ -2,6 +2,7 @@ export type Lang = 'en' | 'bn';
 
 export const strings = {
   appName:            { en: 'Home Tally',        bn: 'হোম ট্যালি' },
+  welcomeTitle:       { en: "Welcome\nto Home Tally", bn: "হোম ট্যালিতে\nস্বাগতম" },
   appTagline:         { en: 'Track every taka',    bn: 'প্রতিটি টাকার হিসাব রাখুন' },
   getStarted:         { en: 'Get Started',         bn: 'শুরু করুন' },
   login:              { en: 'Login',               bn: 'লগইন' },

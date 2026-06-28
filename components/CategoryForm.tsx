@@ -1,8 +1,20 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle,
-  withSpring, withTiming
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { useT } from '../hooks/useLang';
 
@@ -49,7 +61,6 @@ export function CategoryForm({ visible, onClose, onSave, initial }: Props) {
 
     setSaving(true);
     try {
-      // Parent surfaces the network error; we only close on success.
       await onSave({ name: name.trim(), types });
       onClose();
     } catch {
@@ -63,55 +74,208 @@ export function CategoryForm({ visible, onClose, onSave, initial }: Props) {
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      {/* Semi-transparent overlay */}
       <TouchableOpacity activeOpacity={1} onPress={onClose} style={StyleSheet.absoluteFill}>
-        <Animated.View style={overlayStyle} className="flex-1 bg-black/40" />
+        <Animated.View style={[overlayStyle, styles.overlay]} />
       </TouchableOpacity>
+
+      {/* Bottom sheet with keyboard avoidance */}
       <KeyboardAvoidingView
-        className="absolute bottom-0 left-0 right-0"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboardView}
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
       >
-      <Animated.View style={sheetStyle} className="bg-white rounded-t-3xl p-6">
-        <Text className="text-textMain text-lg font-bold mb-4">{initial ? t('editCategory') : t('addCategory')}</Text>
+        <Animated.View style={[sheetStyle, styles.sheet]}>
+          {/* Title */}
+          <Text style={styles.sheetTitle}>
+            {initial ? t('editCategory') : t('addCategory')}
+          </Text>
 
-        <Text className="text-textSub text-sm mb-1">{t('categoryName')}</Text>
-        <TextInput
-          className="bg-bg rounded-xl px-4 py-3 mb-3 text-textMain"
-          value={name}
-          onChangeText={setName}
-          placeholder={t('categoryName')}
-          placeholderTextColor="#666666"
-        />
+          {/* Form fields */}
+          <View style={styles.formContent}>
+            <Text style={styles.label}>{t('categoryName')}</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder={t('categoryName')}
+              placeholderTextColor="#999999"
+            />
 
-        <Text className="text-textSub text-sm mb-1">{t('type')}</Text>
-        <View className="flex-row gap-3 mb-4">
-          <TouchableOpacity
-            onPress={() => setTypes('1')}
-            className={`flex-1 py-3 rounded-xl border items-center ${types === '1' ? 'bg-expense border-expense' : 'bg-white border-border'}`}
-          >
-            <Text className={types === '1' ? 'text-white' : 'text-expense'}>{t('expense')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setTypes('2')}
-            className={`flex-1 py-3 rounded-xl border items-center ${types === '2' ? 'bg-income border-income' : 'bg-white border-border'}`}
-          >
-            <Text className={types === '2' ? 'text-white' : 'text-income'}>{t('income')}</Text>
-          </TouchableOpacity>
-        </View>
+            <Text style={styles.label}>{t('type')}</Text>
+            <View style={styles.typeRow}>
+              <TouchableOpacity
+                onPress={() => setTypes('1')}
+                style={[
+                  styles.typeChip,
+                  types === '1' ? styles.typeChipExpense : styles.typeChipInactive,
+                ]}
+                activeOpacity={0.8}
+              >
+                <Text style={types === '1' ? styles.typeChipTextActive : styles.typeChipTextExpense}>
+                  {t('expense')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setTypes('2')}
+                style={[
+                  styles.typeChip,
+                  types === '2' ? styles.typeChipIncome : styles.typeChipInactive,
+                ]}
+                activeOpacity={0.8}
+              >
+                <Text style={types === '2' ? styles.typeChipTextActive : styles.typeChipTextIncome}>
+                  {t('income')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        <View className="flex-row gap-3">
-          <TouchableOpacity onPress={onClose} disabled={saving} className="flex-1 border border-border rounded-xl py-3 items-center">
-            <Text className="text-textSub">{t('cancel')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSave} disabled={saving} className={`flex-1 rounded-xl py-3 items-center ${saving ? 'bg-primary/60' : 'bg-primary'}`}>
-            {saving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white font-semibold">{t('save')}</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+          {/* Buttons always pinned at the bottom of the sheet */}
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              onPress={onClose}
+              disabled={saving}
+              style={styles.cancelButton}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.cancelButtonText}>{t('cancel')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSave}
+              disabled={saving}
+              style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+              activeOpacity={0.8}
+            >
+              {saving ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.saveButtonText}>{t('save')}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  keyboardView: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  sheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 24,
+    paddingBottom: 16,
+  },
+  sheetTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 20,
+  },
+  formContent: {
+    marginBottom: 8,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#555555',
+    marginBottom: 6,
+    marginLeft: 8,
+  },
+  input: {
+    backgroundColor: '#F4F6F8',
+    borderRadius: 9999,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    marginBottom: 16,
+  },
+  typeRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 8,
+  },
+  typeChip: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 9999,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  typeChipExpense: {
+    backgroundColor: '#8B1A1A',
+    borderColor: '#8B1A1A',
+  },
+  typeChipIncome: {
+    backgroundColor: '#1A7A4A',
+    borderColor: '#1A7A4A',
+  },
+  typeChipInactive: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E0E0E0',
+  },
+  typeChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  typeChipTextExpense: {
+    color: '#8B1A1A',
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  typeChipTextIncome: {
+    color: '#1A7A4A',
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 9999,
+    paddingVertical: 16,
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  cancelButtonText: {
+    color: '#666666',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: '#64bd71',
+    borderRadius: 9999,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+});

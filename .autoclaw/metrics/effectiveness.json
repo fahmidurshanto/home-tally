@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "matrix": {
+    "generatedAt": "2026-06-28T19:26:56.976Z",
+    "totalSessions": 41,
+    "byTool": [
+      {
+        "tool": "Gemini CLI",
+        "project": "(all)",
+        "projectLabel": "(all)",
+        "sessions": 34,
+        "shipped": 0,
+        "discarded": 0,
+        "keptSignals": 0,
+        "estTokens": 160318,
+        "shipRate": 0,
+        "keptPerSession": 0,
+        "tokensPerKept": 160318
+      },
+      {
+        "tool": "AutoClaw Orchestrator",
+        "project": "(all)",
+        "projectLabel": "(all)",
+        "sessions": 5,
+        "shipped": 0,
+        "discarded": 0,
+        "keptSignals": 0,
+        "estTokens": 178,
+        "shipRate": 0,
+        "keptPerSession": 0,
+        "tokensPerKept": 178
+      },
+      {
+        "tool": "Continue",
+        "project": "(all)",
+        "projectLabel": "(all)",
+        "sessions": 2,
+        "shipped": 0,
+        "discarded": 0,
+        "keptSignals": 0,
+        "estTokens": 2196,
+        "shipRate": 0,
+        "keptPerSession": 0,
+        "tokensPerKept": 2196
+      }
+    ],
+    "byToolProject": [
+      {
+        "tool": "Gemini CLI",
+        "project": "/media/fahmidurshanto/fahmidurs_drive/android_projects/hishab-tally/home-tally",
+        "projectLabel": "home-tally",
+        "sessions": 34,
+        "shipped": 0,
+        "discarded": 0,
+        "keptSignals": 0,
+        "estTokens": 160318,
+        "shipRate": 0,
+        "keptPerSession": 0,
+        "tokensPerKept": 160318
+      },
+      {
+        "tool": "AutoClaw Orchestrator",
+        "project": "/media/fahmidurshanto/fahmidurs_drive/android_projects/hishab-tally/home-tally",
+        "projectLabel": "home-tally",
+        "sessions": 5,
+        "shipped": 0,
+        "discarded": 0,
+        "keptSignals": 0,
+        "estTokens": 178,
+        "shipRate": 0,
+        "keptPerSession": 0,
+        "tokensPerKept": 178
+      },
+      {
+        "tool": "Continue",
+        "project": "/media/fahmidurshanto/fahmidurs_drive/android_projects/hishab-tally/home-tally",
+        "projectLabel": "home-tally",
+        "sessions": 2,
+        "shipped": 0,
+        "discarded": 0,
+        "keptSignals": 0,
+        "estTokens": 2196,
+        "shipRate": 0,
+        "keptPerSession": 0,
+        "tokensPerKept": 2196
+      }
+    ]
+  }
+}

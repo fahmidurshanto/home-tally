@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert, StyleSheet, Image } from 'react-native';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
@@ -58,12 +58,20 @@ export default function CategoriesScreen() {
   };
 
   return (
-    <View className="flex-1 bg-bg">
-      <View className="bg-primary px-4 pt-14 pb-4">
-        <Text className="text-white text-xl font-semibold">{t('categories')}</Text>
+    <View style={styles.container}>
+      {/* Top Header */}
+      <View style={styles.header}>
+        <View style={styles.headerBrand}>
+          <Image
+            source={require('../../assets/image-removebg-preview.png')}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>{t('categories')}</Text>
+        </View>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-4">
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={{ paddingBottom: 24 }}>
         {categories.length === 0 ? (
           <EmptyState
             message={t('noCategories')}
@@ -93,3 +101,38 @@ export default function CategoriesScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F4F6F8', // Solid light grey background
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 56,
+    paddingBottom: 24,
+    backgroundColor: '#64bd71', // Brand green header
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  headerBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerLogo: {
+    width: 36,
+    height: 36,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+});
+

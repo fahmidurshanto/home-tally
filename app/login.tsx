@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Image } from 'react-native';
 import { router } from 'expo-router';
 import { useT } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
@@ -27,43 +27,112 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-bg px-6 pt-20"
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <Text className="text-2xl font-bold text-textMain mb-8">{t('login')}</Text>
+      <Image
+        source={require('../assets/image-removebg-preview.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <Text style={styles.title}>{t('login')}</Text>
 
-      <Text className="text-textSub text-sm mb-1">{t('email')}</Text>
+      <Text style={styles.label}>{t('email')}</Text>
       <TextInput
-        className="bg-card rounded-xl px-4 py-3 mb-4 text-textMain border border-border"
+        style={styles.input}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
         placeholder="email@example.com"
+        placeholderTextColor="#999999"
       />
 
-      <Text className="text-textSub text-sm mb-1">{t('password')}</Text>
+      <Text style={styles.label}>{t('password')}</Text>
       <TextInput
-        className="bg-card rounded-xl px-4 py-3 mb-6 text-textMain border border-border"
+        style={styles.input}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         placeholder="••••••"
+        placeholderTextColor="#999999"
       />
 
       <TouchableOpacity
         onPress={handleLogin}
         disabled={loading}
-        className="bg-primary rounded-xl py-4 items-center mb-4"
+        style={styles.button}
+        activeOpacity={0.8}
       >
-        <Text className="text-white font-semibold text-base">
+        <Text style={styles.buttonText}>
           {loading ? t('loading') : t('loginBtn')}
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/register')}>
-        <Text className="text-primary text-center">{t('noAccount')}</Text>
+      <TouchableOpacity onPress={() => router.push('/register')} activeOpacity={0.8}>
+        <Text style={styles.linkText}>{t('noAccount')}</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F4F6F8', // Solid light grey background
+    paddingHorizontal: 24,
+    paddingTop: 96,
+  },
+  logo: {
+    width: 120,
+    height: 90,
+    alignSelf: 'center',
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  label: {
+    color: 'rgba(26, 26, 26, 0.7)',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6,
+    marginLeft: 8,
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 9999,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#64bd71', // Brand green color
+    borderRadius: 9999,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  linkText: {
+    color: '#64bd71', // Brand green color
+    textAlign: 'center',
+    fontWeight: '700',
+    fontSize: 16,
+    marginTop: 8,
+  },
+});
+

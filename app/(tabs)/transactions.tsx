@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Image } from 'react-native';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
@@ -77,28 +77,41 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-bg" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <View className="bg-primary px-4 pt-14 pb-4">
-        <Text className="text-white text-xl font-semibold">{t('transactions')}</Text>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      {/* Top Header */}
+      <View style={styles.header}>
+        <View style={styles.headerBrand}>
+          <Image
+            source={require('../../assets/image-removebg-preview.png')}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>{t('transactions')}</Text>
+        </View>
       </View>
 
-      <View className="px-4 pt-3">
+      {/* Filter and Search Section */}
+      <View style={styles.searchSection}>
         <TextInput
-          className="bg-card rounded-xl px-4 py-2 text-textMain border border-border"
+          style={styles.searchInput}
           value={search}
           onChangeText={setSearch}
           placeholder={t('searchPlaceholder')}
-          placeholderTextColor="#666666"
+          placeholderTextColor="#999999"
         />
 
-        <View className="flex-row gap-2 my-3">
+        <View style={styles.filterRow}>
           {(['all', '2', '1'] as const).map((f) => (
             <TouchableOpacity
               key={f}
               onPress={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl ${filter === f ? 'bg-primary' : 'bg-card border border-border'}`}
+              style={[
+                styles.filterChip,
+                filter === f ? styles.filterChipActive : styles.filterChipInactive
+              ]}
+              activeOpacity={0.8}
             >
-              <Text className={filter === f ? 'text-white' : 'text-textSub'}>
+              <Text style={filter === f ? styles.filterTextActive : styles.filterTextInactive}>
                 {f === 'all' ? t('all') : f === '2' ? t('income') : t('expense')}
               </Text>
             </TouchableOpacity>
@@ -106,7 +119,7 @@ export default function TransactionsScreen() {
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-4">
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={{ paddingBottom: 24 }}>
         {filtered.length === 0 ? (
           <EmptyState
             message={t('noTransactions')}
@@ -138,3 +151,78 @@ export default function TransactionsScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F4F6F8', // Solid light grey background
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 56,
+    paddingBottom: 24,
+    backgroundColor: '#64bd71', // Brand green header
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  headerBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerLogo: {
+    width: 36,
+    height: 36,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  searchSection: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  searchInput: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 9999,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  filterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginVertical: 12,
+  },
+  filterChip: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    borderWidth: 1,
+  },
+  filterChipActive: {
+    backgroundColor: '#64bd71', // Brand green active state
+    borderColor: '#64bd71',
+  },
+  filterChipInactive: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E0E0E0',
+  },
+  filterTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  filterTextInactive: {
+    color: '#666666',
+    fontWeight: '600',
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+});
+
