@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import { useT } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
@@ -20,28 +20,39 @@ export default function WelcomeScreen() {
   if (isAuthenticated) return null;
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../assets/image.png')}
+      style={styles.container}
+      resizeMode="cover"
+    >
       <StatusBar style="dark" />
 
-      {/* Top bar with Language Toggle */}
-      <View style={styles.topBar}>
-        <View style={{ width: 40 }} />
-        <LanguageToggle />
+      {/* Yellow section: top bar + welcome text */}
+      <View style={styles.yellowSection}>
+        {/* Top bar with Language Toggle */}
+        <View style={styles.topBar}>
+          <View style={{ width: 40 }} />
+          <LanguageToggle />
+        </View>
+
+        {/* Welcome Text */}
+        <View style={styles.textArea}>
+          <Text style={styles.welcomeText}>
+            {t('welcomeTitle')}
+          </Text>
+          <Text style={styles.taglineText}>
+            {t('appTagline')}
+          </Text>
+        </View>
       </View>
 
-      {/* App Title Area (Upper Part) */}
-      <View style={styles.titleArea}>
+      {/* App Logo - centered on screen */}
+      <View style={styles.logoArea}>
         <Image
           source={require('../assets/image-removebg-preview.png')}
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.welcomeText}>
-          {t('welcomeTitle')}
-        </Text>
-        <Text style={styles.taglineText}>
-          {t('appTagline')}
-        </Text>
       </View>
 
       {/* White curved bottom dome (Lower Part) */}
@@ -63,16 +74,21 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2C94C', // Vibrant yellow background
+    backgroundColor: 'transparent',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+  },
+  yellowSection: {
+    backgroundColor: '#F2C94C',
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    paddingBottom: 24,
   },
   topBar: {
     flexDirection: 'row',
@@ -87,12 +103,16 @@ const styles = StyleSheet.create({
     height: 120,
     marginBottom: 16,
   },
-  titleArea: {
+  textArea: {
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingHorizontal: 24,
+  },
+  logoArea: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingBottom: 40,
   },
   welcomeText: {
     color: '#1A1A1A',

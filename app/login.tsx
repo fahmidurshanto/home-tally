@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Image, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import { useT } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
@@ -26,6 +26,11 @@ export default function LoginScreen() {
   };
 
   return (
+    <ImageBackground
+      source={require('../assets/image.png')}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -73,13 +78,14 @@ export default function LoginScreen() {
         <Text style={styles.linkText}>{t('noAccount')}</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6F8', // Solid light grey background
+    backgroundColor: 'transparent',
     paddingHorizontal: 24,
     paddingTop: 96,
   },

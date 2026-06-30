@@ -1,57 +1,91 @@
-import { Tabs } from 'expo-router';
+import React, { useState } from 'react';
+import { router } from 'expo-router';
+import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+import type { TabTriggerSlotProps } from 'expo-router/ui';
 import { useT } from '../../hooks/useLang';
-import { Text } from 'react-native';
+import { Text, View, Pressable, StyleSheet } from 'react-native';
+import Drawer from '../../components/Drawer';
 
-export default function TabsLayout() {
-  const t = useT();
+interface TabButtonProps extends TabTriggerSlotProps {
+  icon: string;
+  label: string;
+}
+
+function TabButton({ icon, label, isFocused, ...props }: TabButtonProps) {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: '#64bd71',
-        tabBarInactiveTintColor: '#666666',
-        tabBarStyle: { 
-          borderTopColor: '#E0E0E0',
-          backgroundColor: '#FFFFFF',
-          height: 64,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: {
-          fontWeight: '700',
-          fontSize: 12,
-        },
-        headerShown: false,
-      }}
-    >
-      <Tabs.Screen 
-        name="dashboard" 
-        options={{ 
-          title: t('thisMonth'),
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>🏠</Text>
-          )
-        }} 
-      />
-      <Tabs.Screen 
-        name="transactions" 
-        options={{ 
-          title: t('transactions'),
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>💳</Text>
-          )
-        }} 
-      />
-      <Tabs.Screen 
-        name="categories" 
-        options={{ 
-          title: t('categories'),
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>🏷️</Text>
-          )
-        }} 
-      />
-    </Tabs>
+    <Pressable {...props} style={styles.tabItem}>
+      <Text style={{ fontSize: 22, opacity: isFocused ? 1 : 0.5 }}>{icon}</Text>
+      <Text style={[styles.tabLabel, { color: isFocused ? '#64bd71' : '#666666' }]}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
+export default function TabsLayout() {
+  const t = useT();
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
+  return (
+    <View style={{ flex: 1 }}>
+      <Tabs>
+        <TabSlot style={{ flex: 1 }} />
+        <TabList style={styles.tabBar}>
+          <TabTrigger name="dashboard" href="/dashboard" asChild>
+            <TabButton icon="🏠" label="" />
+          </TabTrigger>
+          <TabTrigger name="transactions" href="/transactions" style={styles.hiddenTab} />
+          <TabTrigger name="categories" href="/categories" style={styles.hiddenTab} />
+          <TabTrigger
+            name="module"
+            href="/module"
+            asChild
+            onPress={(e) => {
+              e.preventDefault();
+              setDrawerVisible(true);
+            }}
+          >
+            <TabButton icon="📦" label={t('module')} />
+          </TabTrigger>
+        </TabList>
+      </Tabs>
+      <Drawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        onCategoryPress={() => {
+          setDrawerVisible(false);
+          router.push('/categories');
+        }}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabBar: {
+    flexDirection: 'row',
+    borderTopColor: '#E0E0E0',
+    borderTopWidth: 1,
+    backgroundColor: '#FFFFFF',
+    height: 64,
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  tabLabel: {
+    fontWeight: '700',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  hiddenTab: {
+    width: 0,
+    height: 0,
+    opacity: 0,
+    overflow: 'hidden',
+  },
+});

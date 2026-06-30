@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Alert, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, Alert, StyleSheet, Image, ImageBackground } from 'react-native';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
@@ -58,7 +58,11 @@ export default function CategoriesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/image.png')}
+      style={styles.container}
+      resizeMode="cover"
+    >
       {/* Top Header */}
       <View style={styles.header}>
         <View style={styles.headerBrand}>
@@ -98,14 +102,14 @@ export default function CategoriesScreen() {
         onSave={handleSave}
         initial={editingItem ? { name: editingItem.name, types: editingItem.types } : undefined}
       />
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6F8', // Solid light grey background
+    backgroundColor: 'transparent',
   },
   header: {
     paddingHorizontal: 20,

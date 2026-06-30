@@ -64,6 +64,7 @@ export const strings = {
   selectCategory:     { en: 'Please select a category', bn: 'একটি বিভাগ নির্বাচন করুন' },
   yes:                { en: 'Yes',                 bn: 'হ্যাঁ' },
   no:                 { en: 'No',                  bn: 'না' },
+  module:             { en: 'Module',              bn: 'মডিউল' },
 };
 
 export type StringKey = keyof typeof strings;

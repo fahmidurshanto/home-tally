@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet, Image, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
@@ -59,7 +59,11 @@ export default function DashboardScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/image.png')}
+      style={styles.container}
+      resizeMode="cover"
+    >
       {/* Top Header Card */}
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
@@ -145,14 +149,14 @@ export default function DashboardScreen() {
         onSave={handleSave}
         categories={categories}
       />
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6F8', // Solid light grey
+    backgroundColor: 'transparent',
   },
   headerCard: {
     backgroundColor: '#64bd71', // Brand green header

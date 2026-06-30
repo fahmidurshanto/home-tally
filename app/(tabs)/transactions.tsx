@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Image, ImageBackground } from 'react-native';
 import { useT } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
 import { useAppData } from '../../hooks/useAppData';
@@ -77,7 +77,12 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <ImageBackground
+      source={require('../../assets/image.png')}
+      style={styles.container}
+      resizeMode="cover"
+    >
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       {/* Top Header */}
       <View style={styles.header}>
         <View style={styles.headerBrand}>
@@ -149,13 +154,14 @@ export default function TransactionsScreen() {
         initial={editingItem ? { particular: editingItem.particular, amount: editingItem.amount, date: editingItem.date, category_id: editingItem.category_id } : undefined}
       />
     </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6F8', // Solid light grey background
+    backgroundColor: 'transparent',
   },
   header: {
     paddingHorizontal: 20,
