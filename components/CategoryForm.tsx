@@ -197,13 +197,13 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#F4F6F8',
     borderRadius: 9999,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    fontSize: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    fontSize: 15,
     color: '#1A1A1A',
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   typeRow: {
     flexDirection: 'row',
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   },
   typeChip: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 9,
     borderRadius: 9999,
     borderWidth: 1,
     alignItems: 'center',

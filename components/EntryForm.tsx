@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -49,6 +51,7 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
   );
   const [categoryId, setCategoryId] = React.useState(initial?.category_id ?? '');
   const [saving, setSaving] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -152,33 +155,64 @@ export function EntryForm({ visible, onClose, onSave, categories, initial }: Pro
               placeholderTextColor="#999999"
             />
 
-            {/* Category selector */}
+            {/* Category selector — Dropdown */}
             <Text style={styles.label}>{t('category')}</Text>
-            <View style={styles.categoryRow}>
-              {categories.map((cat) => (
-                <TouchableOpacity
-                  key={cat.id}
-                  onPress={() => setCategoryId(cat.id)}
-                  style={[
-                    styles.categoryChip,
-                    categoryId === cat.id
-                      ? styles.categoryChipActive
-                      : styles.categoryChipInactive,
-                  ]}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={
-                      categoryId === cat.id
-                        ? styles.categoryChipTextActive
-                        : styles.categoryChipTextInactive
-                    }
-                  >
-                    {cat.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <TouchableOpacity
+              style={styles.dropdownTrigger}
+              onPress={() => setDropdownOpen(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={categoryId ? styles.dropdownValueText : styles.dropdownPlaceholderText}>
+                {categoryId
+                  ? categories.find((c) => c.id === categoryId)?.name ?? t('selectCategory')
+                  : t('selectCategory')}
+              </Text>
+              <Text style={styles.dropdownArrow}>▾</Text>
+            </TouchableOpacity>
+
+            {/* Dropdown Modal */}
+            <Modal
+              visible={dropdownOpen}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setDropdownOpen(false)}
+            >
+              <TouchableOpacity
+                style={styles.dropdownOverlay}
+                activeOpacity={1}
+                onPress={() => setDropdownOpen(false)}
+              >
+                <View style={styles.dropdownList}>
+                  <Text style={styles.dropdownListTitle}>{t('selectCategory')}</Text>
+                  <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+                    {categories.map((cat) => (
+                      <TouchableOpacity
+                        key={cat.id}
+                        style={[
+                          styles.dropdownItem,
+                          categoryId === cat.id && styles.dropdownItemActive,
+                        ]}
+                        onPress={() => {
+                          setCategoryId(cat.id);
+                          setDropdownOpen(false);
+                        }}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={[
+                          styles.dropdownItemText,
+                          categoryId === cat.id && styles.dropdownItemTextActive,
+                        ]}>
+                          {cat.name}
+                        </Text>
+                        {categoryId === cat.id && (
+                          <Text style={styles.dropdownCheckmark}>✓</Text>
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              </TouchableOpacity>
+            </Modal>
           </View>
 
           {/* Buttons always pinned at the bottom of the sheet */}
@@ -247,43 +281,98 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#F4F6F8',
     borderRadius: 9999,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    fontSize: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    fontSize: 15,
     color: '#1A1A1A',
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  categoryRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 24,
-  },
-  categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
+  dropdownTrigger: {
+    backgroundColor: '#F4F6F8',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
     borderWidth: 1,
-  },
-  categoryChipActive: {
-    backgroundColor: '#64bd71',
-    borderColor: '#64bd71',
-  },
-  categoryChipInactive: {
-    backgroundColor: '#FFFFFF',
     borderColor: '#E0E0E0',
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  categoryChipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  categoryChipTextInactive: {
+  dropdownValueText: {
+    fontSize: 15,
     color: '#1A1A1A',
     fontWeight: '600',
-    fontSize: 14,
+    flex: 1,
+  },
+  dropdownPlaceholderText: {
+    fontSize: 15,
+    color: '#999999',
+    flex: 1,
+  },
+  dropdownArrow: {
+    fontSize: 16,
+    color: '#64bd71',
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  dropdownOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  dropdownList: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 8,
+    width: '100%',
+    maxHeight: 320,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  dropdownListTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#999999',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F8F8F8',
+  },
+  dropdownItemActive: {
+    backgroundColor: '#F0FBF2',
+  },
+  dropdownItemText: {
+    fontSize: 15,
+    color: '#1A1A1A',
+    fontWeight: '500',
+  },
+  dropdownItemTextActive: {
+    color: '#64bd71',
+    fontWeight: '700',
+  },
+  dropdownCheckmark: {
+    fontSize: 16,
+    color: '#64bd71',
+    fontWeight: '800',
   },
   buttonRow: {
     flexDirection: 'row',
