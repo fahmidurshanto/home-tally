@@ -37,6 +37,7 @@ export default function TabsLayout() {
           <TabTrigger name="transactions" href="/transactions" style={styles.hiddenTab} />
           <TabTrigger name="categories" href="/categories" style={styles.hiddenTab} />
           <TabTrigger name="module" href="/module" style={styles.hiddenTab} />
+          <TabTrigger name="account" href="/account" style={styles.hiddenTab} />
           
           <Pressable
             onPress={() => setDrawerVisible(true)}
@@ -56,6 +57,10 @@ export default function TabsLayout() {
         onCategoryPress={() => {
           setDrawerVisible(false);
           router.push('/categories');
+        }}
+        onAccountPress={() => {
+          setDrawerVisible(false);
+          router.push('/account');
         }}
       />
     </View>

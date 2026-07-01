@@ -9,9 +9,10 @@ interface DrawerProps {
   visible: boolean;
   onClose: () => void;
   onCategoryPress?: () => void;
+  onAccountPress?: () => void;
 }
 
-export default function Drawer({ visible, onClose, onCategoryPress }: DrawerProps) {
+export default function Drawer({ visible, onClose, onCategoryPress, onAccountPress }: DrawerProps) {
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -62,7 +63,7 @@ export default function Drawer({ visible, onClose, onCategoryPress }: DrawerProp
             </View>
             <View style={styles.divider} />
             <Text style={styles.drawerTitle}>Menu</Text>
-            <TouchableOpacity style={styles.menuItem} onPress={onClose}>
+            <TouchableOpacity style={styles.menuItem} onPress={onAccountPress}>
               <Text style={styles.menuItemText}>Account</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={onCategoryPress}>

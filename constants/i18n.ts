@@ -66,6 +66,7 @@ export const strings = {
   no:                 { en: 'No',                  bn: 'না' },
   module:             { en: 'Module',              bn: 'মডিউল' },
   monthlyChartTitle:  { en: 'Monthly Collection Amount', bn: 'কোন মাসে কত কর আদায়।' },
+  search:             { en: 'Search',              bn: 'খুঁজুন' },
 };
 
 
