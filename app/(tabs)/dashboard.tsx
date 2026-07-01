@@ -11,7 +11,9 @@ import { AnimatedFAB } from '../../components/AnimatedFAB';
 import { TransactionItem } from '../../components/TransactionItem';
 import { EmptyState } from '../../components/EmptyState';
 import { EntryForm } from '../../components/EntryForm';
+import { MonthlyBarChart } from '../../components/MonthlyBarChart';
 import { formatBDT, formatDate, isExpenseIncome } from '../../lib/utils';
+
 
 export default function DashboardScreen() {
   const t = useT();
@@ -101,12 +103,16 @@ export default function DashboardScreen() {
       </View>
 
       <ScrollView style={styles.scrollContainer} contentContainerStyle={{ paddingBottom: 32 }}>
+        {/* Monthly Collection Bar Chart */}
+        <MonthlyBarChart expenses={expenses} categories={categories} />
+
         {/* Summary Cards */}
         <View style={styles.summaryRow}>
           <SummaryCard title={t('totalIncome')} amount={formatBDT(totalIncome)} color="#1A7A4A" delay={0} />
           <SummaryCard title={t('totalExpense')} amount={formatBDT(totalExpense)} color="#8B1A1A" delay={100} />
           <SummaryCard title={t('balance')} amount={formatBDT(balance)} color="#64bd71" delay={200} />
         </View>
+
 
         <Text style={styles.sectionTitle}>{t('recentTx')}</Text>
 

@@ -65,6 +65,8 @@ export const strings = {
   yes:                { en: 'Yes',                 bn: 'হ্যাঁ' },
   no:                 { en: 'No',                  bn: 'না' },
   module:             { en: 'Module',              bn: 'মডিউল' },
+  monthlyChartTitle:  { en: 'Monthly Collection Amount', bn: 'কোন মাসে কত কর আদায়।' },
 };
+
 
 export type StringKey = keyof typeof strings;
