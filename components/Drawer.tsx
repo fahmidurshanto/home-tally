@@ -12,13 +12,11 @@ interface DrawerProps {
 }
 
 export default function Drawer({ visible, onClose, onCategoryPress }: DrawerProps) {
-  const [rendered, setRendered] = useState(false);
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
-      setRendered(true);
       Animated.parallel([
         Animated.spring(translateX, {
           toValue: 0,
@@ -43,14 +41,15 @@ export default function Drawer({ visible, onClose, onCategoryPress }: DrawerProp
           duration: 200,
           useNativeDriver: true,
         }),
-      ]).start(() => setRendered(false));
+      ]).start();
     }
   }, [visible]);
 
-  if (!rendered) return null;
-
   return (
-    <View style={styles.container}>
+    <View 
+      style={styles.container} 
+      pointerEvents={visible ? 'auto' : 'none'}
+    >
       <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
         <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} activeOpacity={1} />
       </Animated.View>

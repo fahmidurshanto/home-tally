@@ -36,19 +36,20 @@ export default function TabsLayout() {
           </TabTrigger>
           <TabTrigger name="transactions" href="/transactions" style={styles.hiddenTab} />
           <TabTrigger name="categories" href="/categories" style={styles.hiddenTab} />
-          <TabTrigger
-            name="module"
-            href="/module"
-            asChild
-            onPress={(e) => {
-              e.preventDefault();
-              setDrawerVisible(true);
-            }}
+          <TabTrigger name="module" href="/module" style={styles.hiddenTab} />
+          
+          <Pressable
+            onPress={() => setDrawerVisible(true)}
+            style={styles.tabItem}
           >
-            <TabButton icon="📦" label={t('module')} />
-          </TabTrigger>
+            <Text style={{ fontSize: 22, opacity: drawerVisible ? 1 : 0.5 }}>📦</Text>
+            <Text style={[styles.tabLabel, { color: drawerVisible ? '#64bd71' : '#666666' }]}>
+              {t('module')}
+            </Text>
+          </Pressable>
         </TabList>
       </Tabs>
+
       <Drawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}

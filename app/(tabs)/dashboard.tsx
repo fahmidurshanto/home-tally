@@ -7,7 +7,6 @@ import { useAppData } from '../../hooks/useAppData';
 import { useCategories, useExpenses, useCreateExpense } from '../../lib/queries';
 import { LanguageToggle } from '../../components/LanguageToggle';
 import { SummaryCard } from '../../components/SummaryCard';
-import { AnimatedFAB } from '../../components/AnimatedFAB';
 import { TransactionItem } from '../../components/TransactionItem';
 import { EmptyState } from '../../components/EmptyState';
 import { EntryForm } from '../../components/EntryForm';
@@ -42,7 +41,9 @@ export default function DashboardScreen() {
     .filter(e => !isExpenseIncome(e, categories))
     .reduce((sum, e) => sum + parseFloat(e.amount || '0'), 0);
   const balance = totalIncome - totalExpense;
-  const recent = expenses.slice(0, 5);
+  const recent = [...expenses]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
 
   const handleLogout = async () => {
     await logout();
@@ -82,7 +83,7 @@ export default function DashboardScreen() {
             onPress={() => setFormVisible(true)}
             activeOpacity={0.8}
           >
-            <Text style={styles.addCardButtonText}>+ {t('addEntry')}</Text>
+            <Text style={styles.addCardButtonText}>+</Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.headerSubtitle}>{t('hello')}, {user?.first_name}!</Text>
@@ -147,8 +148,6 @@ export default function DashboardScreen() {
         )}
       </ScrollView>
 
-      <AnimatedFAB onPress={() => setFormVisible(true)} />
-
       <EntryForm
         visible={formVisible}
         onClose={() => setFormVisible(false)}
@@ -199,14 +198,18 @@ const styles = StyleSheet.create({
   },
   addCardButton: {
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   addCardButtonText: {
     color: '#64bd71',
     fontWeight: '800',
-    fontSize: 14,
+    fontSize: 22,
+    lineHeight: 24,
+    marginTop: -2,
   },
   filterRow: {
     flexDirection: 'row',
