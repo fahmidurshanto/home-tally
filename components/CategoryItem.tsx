@@ -38,25 +38,22 @@ export function CategoryItem({ item, onDelete, onPress }: Props) {
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={rowStyle}>
-        <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-          {/* Left card-like logo container */}
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>🏷️</Text>
-          </View>
+        <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.6}>
+          {/* Coloured dot indicator */}
+          <View style={[styles.dot, { backgroundColor: isIncome ? '#1A7A4A' : '#8B1A1A' }]} />
 
-          {/* Middle Details */}
-          <View style={styles.detailsContainer}>
-            <Text style={styles.nameText} numberOfLines={1}>
-              {item.name}
-            </Text>
-          </View>
+          {/* Name */}
+          <Text style={styles.nameText} numberOfLines={1}>
+            {item.name}
+          </Text>
 
-          {/* Right styled type button */}
-          <View style={[styles.typeButton, { backgroundColor: isIncome ? '#1A7A4A' : '#8B1A1A' }]}>
-            <Text style={styles.typeButtonText}>
-              {isIncome ? 'Income' : 'Expense'}
-            </Text>
-          </View>
+          {/* Right-side type badge (small, no pill) */}
+          <Text style={[styles.typeLabel, { color: isIncome ? '#1A7A4A' : '#8B1A1A' }]}>
+            {isIncome ? 'Income' : 'Expense'}
+          </Text>
+
+          {/* Edit caret */}
+          <Text style={styles.caret}>›</Text>
         </TouchableOpacity>
       </Animated.View>
     </GestureDetector>
@@ -64,51 +61,36 @@ export function CategoryItem({ item, onDelete, onPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 12,
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
-  logoContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: '#F4F6F8',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  logoText: {
-    fontSize: 24,
-  },
-  detailsContainer: {
-    flex: 1,
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 14,
+    flexShrink: 0,
   },
   nameText: {
-    fontSize: 16,
-    fontWeight: '700',
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
     color: '#1A1A1A',
   },
-  typeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 9999,
-    minWidth: 90,
-    alignItems: 'center',
-    justifyContent: 'center',
+  typeLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginRight: 8,
   },
-  typeButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 14,
+  caret: {
+    fontSize: 20,
+    color: '#CCCCCC',
+    lineHeight: 22,
   },
 });
-

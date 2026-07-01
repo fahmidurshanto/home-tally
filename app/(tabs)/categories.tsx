@@ -83,14 +83,16 @@ export default function CategoriesScreen() {
             onCta={() => setFormVisible(true)}
           />
         ) : (
-          categories.map((item) => (
-            <CategoryItem
-              key={item.id}
-              item={item}
-              onDelete={() => handleDelete(item.id)}
-              onPress={() => handleEdit(item)}
-            />
-          ))
+          <View style={styles.listContainer}>
+            {categories.map((item) => (
+              <CategoryItem
+                key={item.id}
+                item={item}
+                onDelete={() => handleDelete(item.id)}
+                onPress={() => handleEdit(item)}
+              />
+            ))}
+          </View>
         )}
       </ScrollView>
 
@@ -135,8 +137,15 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    paddingHorizontal: 16,
     paddingTop: 16,
+    paddingHorizontal: 16,
+  },
+  listContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#EFEFEF',
   },
 });
 
