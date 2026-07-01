@@ -197,7 +197,7 @@ export default function AccountScreen() {
           {/* Table Headers */}
           <View style={styles.tableHeaderRow}>
             <Text style={[styles.columnHeader, styles.dateCol]}>Date</Text>
-            <Text style={[styles.columnHeader, styles.narrationCol]}>Narration</Text>
+            <Text style={[styles.columnHeader, styles.narrationCol]}>Particulars</Text>
             <Text style={[styles.columnHeader, styles.amountCol]}>Amount</Text>
           </View>
 
@@ -344,7 +344,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: '#1A1A1A',
-    textAlign: 'center',
   },
   tableRow: {
     flexDirection: 'row',
@@ -357,17 +356,19 @@ const styles = StyleSheet.create({
   rowText: {
     fontSize: 11,
     color: '#333333',
-    textAlign: 'center',
   },
   dateCol: {
     flex: 1.2,
+    textAlign: 'left',
   },
   narrationCol: {
     flex: 2,
     paddingHorizontal: 4,
+    textAlign: 'left',
   },
   amountCol: {
     flex: 1.3,
+    textAlign: 'right',
   },
   negativeAmount: {
     color: '#8B1A1A',
